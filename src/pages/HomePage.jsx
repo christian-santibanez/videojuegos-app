@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Row, Col, Spinner, Container, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import SearchBar from '../components/SearchBar';
@@ -15,7 +15,7 @@ const HomePage = () => {
 
   const API_KEY = process.env.REACT_APP_RAWG_KEY;
 
-  const fetchGames = async () => {
+  const fetchGames = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -46,9 +46,9 @@ const HomePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_KEY, searchQuery, filters]);
 
-  const fetchFilterOptions = async () => {
+  const fetchFilterOptions = useCallback(async () => {
     try {
       const endpoints = {
         genres: 'genres',
@@ -73,7 +73,7 @@ const HomePage = () => {
       console.error("Error fetching filters:", error);
       setError('Error al cargar los filtros');
     }
-  };
+  }, [API_KEY]);
 
   useEffect(() => {
     const init = async () => {
@@ -81,7 +81,7 @@ const HomePage = () => {
       await fetchGames();
     };
     init();
-  }, []);
+  }, [fetchFilterOptions, fetchGames]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -91,7 +91,7 @@ const HomePage = () => {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, filters]);
+  }, [searchQuery, filters, fetchGames]);
 
   const handleSearch = (e) => {
     e.preventDefault();

@@ -22,7 +22,7 @@ const GameDetail = () => {
     };
 
     fetchGame();
-  }, [id]);
+  }, [id, API_KEY]);
 
   if (loading) return <Spinner animation="border" className="d-block mx-auto mt-5" />;
 
